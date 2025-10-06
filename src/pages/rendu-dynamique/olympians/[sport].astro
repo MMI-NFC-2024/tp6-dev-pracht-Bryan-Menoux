@@ -1,0 +1,90 @@
+﻿---
+import PlotFigure from "../../../components/PlotFigure.astro";
+import Layout from "../../../layouts/Layout.astro";
+import * as Plot from "@observablehq/plot";
+import olympians from "../../../assets/olympians.json";
+export const prerender = false;
+
+const { sport } = Astro.params;
+const normalized = sport?.toLowerCase();
+const records = olympians.filter(
+  (athlete) => athlete.sport?.toLowerCase() === normalized
+);
+const title = records[0]?.sport ?? sport;
+const measurable = records.filter(
+  (athlete) => athlete.height && athlete.weight
+);
+---
+
+<Layout>
+  <div
+    class="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-slate-100"
+  >
+    <div class="mx-auto flex max-w-4xl flex-col gap-10 px-6 py-16">
+      <header class="space-y-3">
+        <p
+          class="text-sm font-semibold uppercase tracking-[0.25em] text-sky-300/80"
+        >
+          Olympians
+        </p>
+        <h1 class="text-4xl font-semibold tracking-tight">{sport}</h1>
+        <p class="text-sm text-slate-300 sm:text-base">
+          Visualisation de la taille et du poids pour les athlètes de la
+          discipline {sport}. Les points sont colorés selon le sexe.
+        </p>
+      </header>
+      {
+        records.length ? (
+          <div class="rounded-3xl border border-white/10 bg-white/5 p-6 shadow-2xl shadow-slate-950/60 backdrop-blur">
+            <div class="mb-4 flex flex-wrap items-center justify-between gap-2">
+              <span class="text-sm text-slate-300">
+                {measurable.length} athlètes avec mesures complètes
+              </span>
+              <a
+                href="/rendu-statique"
+                class="text-sm font-semibold text-sky-300 transition hover:text-sky-200"
+              >
+                Retour
+              </a>
+            </div>
+            {measurable.length ? (
+              <PlotFigure
+                options={{
+                  marks: [
+                    Plot.dot(measurable, {
+                      x: "height",
+                      y: "weight",
+                      stroke: "sex",
+                    }),
+                  ],
+                  width: 640,
+                  height: 420,
+                  x: { label: "Taille (m)" },
+                  y: { label: "Poids (kg)" },
+                  color: { legend: true, scheme: "tableau10" },
+                }}
+              />
+            ) : (
+              <div class="rounded-2xl border border-white/10 bg-slate-900/60 p-8 text-center text-slate-300">
+                <p>
+                  Aucune donnée de taille et de poids disponible pour cette
+                  discipline.
+                </p>
+              </div>
+            )}
+          </div>
+        ) : (
+          <div class="rounded-3xl border border-white/10 bg-white/5 p-8 text-center text-slate-300">
+            <p>Aucune donnée disponible pour cette discipline.</p>
+            <a
+              href="/rendu-statique"
+              class="mt-4 inline-block text-sm font-semibold text-sky-300 transition hover:text-sky-200"
+            >
+              Retour à la liste
+            </a>
+          </div>
+        )
+      }
+    </div>
+  </div>
+</Layout>

@@ -1,55 +1,97 @@
-﻿---
+---
 import Layout from "../../layouts/Layout.astro";
 import penguins from "../../assets/penguins.json";
+import olympians from "../../assets/olympians.json";
 
 const speciesList = [
   ...new Set(penguins.map((penguin) => penguin.species).filter(Boolean)),
 ];
-const links = speciesList.map((species) => ({
-  species,
-  href: `/rendu-dynamique/${species.toLowerCase()}`,
+const penguinLinks = speciesList.map((species) => ({
+  label: species,
+  href: `/rendu-dynamique/penguins/${species.toLowerCase()}`,
+  badge: "Palmer Penguins",
+  description: "Explorer les mesures morphologiques",
 }));
+
+const sports = [
+  ...new Set(olympians.map((athlete) => athlete.sport).filter(Boolean)),
+];
+const olympianLinks = sports.map((sport) => ({
+  label: sport,
+  href: `/rendu-dynamique/olympians/${sport.toLowerCase()}`,
+  badge: "Olympians",
+  description: "Voir les athlètes par discipline",
+}));
+
+const sections = [
+  {
+    title: "Manchots",
+    badge: "Palmer Penguins",
+    links: penguinLinks,
+    accent: "emerald",
+  },
+  {
+    title: "Athlètes",
+    badge: "Olympians",
+    links: olympianLinks,
+    accent: "sky",
+  },
+];
 ---
 
 <Layout>
   <div class="min-h-screen bg-slate-950 text-slate-100">
-    <div class="mx-auto flex max-w-4xl flex-col gap-8 px-6 py-16">
+    <div class="mx-auto flex max-w-4xl flex-col gap-12 px-6 py-16">
       <header class="space-y-3">
         <p
           class="text-sm font-semibold uppercase tracking-[0.25em] text-emerald-300/80"
         >
-          Espèces
+          Sélection
         </p>
         <h1 class="text-4xl font-semibold tracking-tight">
-          Sélectionner une espèce
+          Choisir un ensemble de données
         </h1>
         <p class="text-sm text-slate-300 sm:text-base">
-          Choisissez un groupe de manchots pour découvrir ses graphiques
-          détaillés.
+          Accédez aux pages dynamiques pour explorer les graphiques par espèce
+          ou par discipline.
         </p>
       </header>
-      <ul class="grid gap-4 sm:grid-cols-2">
-        {
-          links.map(({ species, href }) => (
-            <li>
-              <a
-                href={href}
-                class="group block rounded-2xl border border-white/10 bg-slate-900/60 p-6 shadow-lg shadow-slate-950/40 transition hover:border-emerald-300/60 hover:bg-slate-900/80"
+      {
+        sections.map(({ title, badge, links, accent }) => (
+          <section class="space-y-4">
+            <div class="space-y-2">
+              <p
+                class={`text-xs uppercase tracking-[0.3em] text-${accent}-300/80`}
               >
-                <span class="text-xs uppercase tracking-[0.2em] text-emerald-300/80">
-                  Palmer Penguins
-                </span>
-                <span class="mt-3 block text-2xl font-semibold group-hover:text-emerald-200">
-                  {species}
-                </span>
-                <span class="mt-2 block text-sm text-slate-400 group-hover:text-slate-200">
-                  Explorer les mesures morphologiques
-                </span>
-              </a>
-            </li>
-          ))
-        }
-      </ul>
+                {badge}
+              </p>
+              <h2 class="text-2xl font-semibold">{title}</h2>
+            </div>
+            <ul class="grid gap-4 sm:grid-cols-2">
+              {links.map(({ label, href, badge: itemBadge, description }) => (
+                <li>
+                  <a
+                    href={href}
+                    class={`group block rounded-2xl border border-white/10 bg-slate-900/60 p-6 shadow-lg shadow-slate-950/40 transition hover:border-${accent}-300/60 hover:bg-slate-900/80`}
+                  >
+                    <span
+                      class={`text-xs uppercase tracking-[0.2em] text-${accent}-300/80`}
+                    >
+                      {itemBadge}
+                    </span>
+                    <span class="mt-3 block text-2xl font-semibold group-hover:text-slate-50">
+                      {label}
+                    </span>
+                    <span class="mt-2 block text-sm text-slate-400 group-hover:text-slate-200">
+                      {description}
+                    </span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ))
+      }
     </div>
   </div>
 </Layout>
