@@ -3,82 +3,140 @@ import PlotFigure from "../components/PlotFigure.astro";
 import Layout from "../layouts/Layout.astro";
 import * as Plot from "@observablehq/plot";
 import penguins from "../assets/penguins.json";
+import olympians from "../assets/olympians.json";
 
 const speciesList = [
   ...new Set(penguins.map((penguin) => penguin.species).filter(Boolean)),
 ];
-const plots = speciesList.map((species) => ({
-  species,
-  data: penguins.filter((penguin) => penguin.species === species),
-  count: penguins.filter(
-    (penguin) =>
-      penguin.species === species &&
-      penguin.culmen_length_mm &&
-      penguin.culmen_depth_mm
-  ).length,
-}));
+const penguinSlides = speciesList.map((species) => {
+  const records = penguins.filter((penguin) => penguin.species === species);
+  const valid = records.filter(
+    (penguin) => penguin.culmen_length_mm && penguin.culmen_depth_mm
+  );
+  return { species, records: valid, count: valid.length };
+});
+
+const sports = [
+  ...new Set(olympians.map((athlete) => athlete.sport).filter(Boolean)),
+];
+const olympianSlides = sports.map((sport) => {
+  const records = olympians.filter(
+    (athlete) => athlete.sport === sport && athlete.height && athlete.weight
+  );
+  return { sport, records, count: records.length };
+});
 ---
 
 <Layout>
   <div
     class="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-slate-100"
   >
-    <div class="mx-auto flex max-w-6xl flex-col gap-10 px-6 py-12">
+    <div class="mx-auto flex max-w-6xl flex-col gap-12 px-6 py-12">
       <header
         class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between"
       >
         <h1 class="text-4xl font-semibold tracking-tight sm:text-5xl">
-          TP N°6 - Rendu dynamique avec Astro et Observable Plot
+          TP N°6 · Rendu dynamique avec Astro et Observable Plot
         </h1>
       </header>
-      <div
-        class="rounded-3xl border border-white/10 bg-white/5 p-6 shadow-2xl shadow-slate-950/60 backdrop-blur"
-      >
-        <div
-          class="flex gap-6 overflow-x-auto pb-4 scroll-smooth snap-x snap-mandatory"
-        >
-          {
-            plots.map(({ species, data, count }) => (
-              <section class="flex w-full flex-none snap-center flex-col gap-4 rounded-2xl bg-slate-900/60 p-6 shadow-lg shadow-slate-950/40 ring-1 ring-white/10 backdrop-blur md:min-w-[28rem]">
-                <div class="flex items-start justify-between">
-                  <div>
-                    <p class="text-xs uppercase tracking-[0.2em] text-emerald-300/80">
-                      Espèce
-                    </p>
-                    <h2 class="text-2xl font-semibold">{species}</h2>
-                  </div>
-                  <span class="rounded-full bg-emerald-400/10 px-3 py-1 text-xs font-medium text-emerald-300/90">
-                    {count} individus
-                  </span>
-                </div>
-                <PlotFigure
-                  options={{
-                    marks: [
-                      Plot.dot(data, {
-                        x: "culmen_length_mm",
-                        y: "culmen_depth_mm",
-                        stroke: "sex",
-                      }),
-                    ],
-                    width: 480,
-                    height: 360,
-                    x: {
-                      label: "Longueur du bec (mm)",
-                    },
-                    y: {
-                      label: "Profondeur du bec (mm)",
-                    },
-                    color: {
-                      legend: true,
-                      scheme: "set2",
-                    },
-                  }}
-                />
-              </section>
-            ))
-          }
+      <section class="space-y-6">
+        <div class="space-y-2">
+          <p class="text-sm uppercase tracking-[0.3em] text-emerald-300/70">
+            Palmer Penguins
+          </p>
+          <h2 class="text-3xl font-semibold">Morphologie des manchots</h2>
         </div>
-      </div>
+        <div
+          class="rounded-3xl border border-white/10 bg-white/5 p-6 shadow-2xl shadow-slate-950/60 backdrop-blur"
+        >
+          <div
+            class="flex gap-6 overflow-x-auto pb-4 scroll-smooth snap-x snap-mandatory"
+          >
+            {
+              penguinSlides.map(({ species, records, count }) => (
+                <article class="flex w-full flex-none snap-center flex-col gap-4 rounded-2xl bg-slate-900/60 p-6 shadow-lg shadow-slate-950/40 ring-1 ring-white/10 backdrop-blur md:min-w-[28rem]">
+                  <div class="flex items-start justify-between">
+                    <div>
+                      <p class="text-xs uppercase tracking-[0.2em] text-emerald-300/80">
+                        Espèce
+                      </p>
+                      <h3 class="text-2xl font-semibold">{species}</h3>
+                    </div>
+                    <span class="rounded-full bg-emerald-400/10 px-3 py-1 text-xs font-medium text-emerald-300/90">
+                      {count} individus
+                    </span>
+                  </div>
+                  <PlotFigure
+                    options={{
+                      marks: [
+                        Plot.dot(records, {
+                          x: "culmen_length_mm",
+                          y: "culmen_depth_mm",
+                          stroke: "sex",
+                        }),
+                      ],
+                      width: 480,
+                      height: 360,
+                      x: { label: "Longueur du bec (mm)" },
+                      y: { label: "Profondeur du bec (mm)" },
+                      color: { legend: true, scheme: "set2" },
+                    }}
+                  />
+                </article>
+              ))
+            }
+          </div>
+        </div>
+      </section>
+      <section class="space-y-6">
+        <div class="space-y-2">
+          <p class="text-sm uppercase tracking-[0.3em] text-sky-300/70">
+            Olympians
+          </p>
+          <h2 class="text-3xl font-semibold">Taille et poids par discipline</h2>
+        </div>
+        <div
+          class="rounded-3xl border border-white/10 bg-white/5 p-6 shadow-2xl shadow-slate-950/60 backdrop-blur"
+        >
+          <div
+            class="flex gap-6 overflow-x-auto pb-4 scroll-smooth snap-x snap-mandatory"
+          >
+            {
+              olympianSlides.map(({ sport, records, count }) => (
+                <article class="flex w-full flex-none snap-center flex-col gap-4 rounded-2xl bg-slate-900/60 p-6 shadow-lg shadow-slate-950/40 ring-1 ring-white/10 backdrop-blur md:min-w-[28rem]">
+                  <div class="flex items-start justify-between">
+                    <div>
+                      <p class="text-xs uppercase tracking-[0.2em] text-sky-300/80">
+                        Discipline
+                      </p>
+                      <h3 class="text-2xl font-semibold">{sport}</h3>
+                    </div>
+                    <span class="rounded-full bg-sky-400/10 px-3 py-1 text-xs font-medium text-sky-300/90">
+                      {count} athlètes
+                    </span>
+                  </div>
+                  <PlotFigure
+                    options={{
+                      marks: [
+                        Plot.dot(records, {
+                          x: "height",
+                          y: "weight",
+                          stroke: "sex",
+                        }),
+                      ],
+                      width: 480,
+                      height: 360,
+                      x: { label: "Taille (m)" },
+                      y: { label: "Poids (kg)" },
+                      color: { legend: true, scheme: "tableau10" },
+                    }}
+                  />
+                </article>
+              ))
+            }
+          </div>
+        </div>
+      </section>
     </div>
   </div>
 </Layout>
