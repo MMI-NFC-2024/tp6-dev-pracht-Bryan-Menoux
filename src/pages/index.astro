@@ -1,4 +1,4 @@
----
+﻿---
 import PlotFigure from "../components/PlotFigure.astro";
 import Layout from "../layouts/Layout.astro";
 import * as Plot from "@observablehq/plot";
@@ -27,21 +27,9 @@ const plots = speciesList.map((species) => ({
       <header
         class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between"
       >
-        <div class="space-y-2">
-          <p
-            class="text-sm font-semibold uppercase tracking-[0.3em] text-emerald-300/70"
-          >
-            Palmer Penguins
-          </p>
-          <h1 class="text-4xl font-semibold tracking-tight sm:text-5xl">
-            Explorer les morphologies des manchots
-          </h1>
-        </div>
-        <p class="max-w-md text-sm text-slate-300 sm:text-base">
-          Faites défiler pour comparer la relation entre la longueur et la
-          profondeur du bec selon les espèces. Chaque point représente un
-          individu, coloré par sexe.
-        </p>
+        <h1 class="text-4xl font-semibold tracking-tight sm:text-5xl">
+          TP N°6 - Rendu dynamique avec Astro et Observable Plot
+        </h1>
       </header>
       <div
         class="rounded-3xl border border-white/10 bg-white/5 p-6 shadow-2xl shadow-slate-950/60 backdrop-blur"
